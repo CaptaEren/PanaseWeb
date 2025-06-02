@@ -34,14 +34,14 @@ namespace PanaseWeb.Services
             return _mapper.Map<PaymentResponseDto>(entity);
         }
 
-        public async Task<bool> UpdateAsync(int id, PaymentResponseDto dto)
-        {
-            var entity = await _context.Payments.FindAsync(id);
-            if (entity == null) return false;
-            _mapper.Map(dto, entity);
-            await _context.SaveChangesAsync();
-            return true;
-        }
+        //public async Task<bool> UpdateAsync(int id, PaymentResponseDto dto)
+        //{
+        //    var entity = await _context.Payments.FindAsync(id);
+        //    if (entity == null) return false;
+        //    _mapper.Map(dto, entity);
+        //    await _context.SaveChangesAsync();
+        //    return true;
+        //}
 
         public async Task<bool> DeleteAsync(int id)
         {

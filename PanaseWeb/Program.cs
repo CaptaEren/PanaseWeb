@@ -1,9 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using PanaseWeb.Data;
+using PanaseWeb.Services;
+using PanaseWeb.Services.Interfaces;
+using AutoMapper;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Veritabaný Baðlantýsý Ekleme
+// 1. Veritabaný Baðlantýsý
 builder.Services.AddDbContext<ApiContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -15,22 +19,39 @@ builder.Services.AddDbContext<ApiContext>(options =>
                 errorNumbersToAdd: null);
         }));
 
-// 2. Geliþtirme ortamýnda hata sayfasý
+// 2. Razor Pages desteði
+builder.Services.AddRazorPages();
+
+// 3. AutoMapper Profilleri
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+// 4. Servisleri DI Konteynerine Ekle
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPsychologistService, PsychologistService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<ITherapyNoteService, TherapyNoteService>();
+builder.Services.AddScoped<ITherapySessionService, TherapySessionService>();
+builder.Services.AddScoped<IResourceService, ResourceService>();
+
+// 5. Swagger ve API istemiyorsan ekleme (isteðe baðlý)
+// builder.Services.AddEndpointsApiExplorer();
+// builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// 3. Otomatik migration uygulama
+// 6. Migration’larý otomatik uygula
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApiContext>();
-    db.Database.Migrate(); // Bekleyen migration'larý uygular
+    db.Database.Migrate();
 }
 
-// 4. HTTP Pipeline Konfigürasyonu
+// 7. HTTP Pipeline Yapýlandýrmasý
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-
+    // app.UseSwagger();  // Razor Pages için gerekmez
+    // app.UseSwaggerUI();
 }
 else
 {
@@ -40,7 +61,12 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
+
+app.UseAuthorization();
+
+// 8. Razor Pages rotasýný tanýmla
 app.MapRazorPages();
 
 app.Run();

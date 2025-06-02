@@ -9,7 +9,7 @@ using System.Resources;
 
 namespace PanaseWeb.Services
 {
-    public class ResourceService : IResourceService
+    public class ResourceService : IResourceService, Interfaces.IResourceService
     {
         private readonly ApiContext _context;
         private readonly IMapper _mapper;
@@ -43,13 +43,15 @@ namespace PanaseWeb.Services
             return true;
         }
 
-        IResourceReader? IResourceService.GetResourceReader(CultureInfo info)
+        public IResourceReader? GetResourceReader(CultureInfo info)
         {
+            // Replace with actual resource file path or logic as needed
             return new ResourceReader("path_to_resource_file");
         }
 
-        IResourceWriter IResourceService.GetResourceWriter(CultureInfo info)
+        public IResourceWriter GetResourceWriter(CultureInfo info)
         {
+            // Replace with actual resource file path or logic as needed
             return new ResourceWriter("path_to_resource_file");
         }
     }
